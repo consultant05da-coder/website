@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Precious Love</title>
+    <style>
+        /* CSS STYLING - ENHANCED CYANOPHILE THEME */
+        :root {
+            --primary-cyan: #00acc1;
+            --light-cyan: #e0f7fa;
+            --dark-cyan: #006064;
+            --accent-blue: #00838f;
+            --soft-white: #ffffff;
+            --gradient-start: #e0f7fa;
+            --gradient-end: #b2ebf2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: var(--dark-cyan);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Passcode Screen */
+        #passcode-screen {
+            text-align: center;
+            background: var(--soft-white);
+            padding: 50px 40px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0, 172, 193, 0.3);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        #passcode-screen h2 {
+            color: var(--primary-cyan);
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        input[type="password"], input[type="date"] {
+            padding: 12px 20px;
+            font-size: 1.2rem;
+            border: 2px solid var(--primary-cyan);
+            border-radius: 12px;
+            text-align: center;
+            width: 200px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--dark-cyan);
+            box-shadow: 0 0 10px rgba(0, 172, 193, 0.3);
+        }
+
+        /* Main Content */
+        #main-content {
+            display: none;
+            width: 100%;
+            max-width: 700px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--soft-white);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 172, 193, 0.2);
+        }
+
+        header h1 {
+            color: var(--dark-cyan);
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--primary-cyan), var(--dark-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary-cyan), var(--accent-blue));
+            color: white;
+            border: none;
+            padding: 15px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 172, 193, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 172, 193, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .card {
+            background: var(--soft-white);
+            padding: 30px;
+            border-radius: 20px;
+            min-height: 350px;
+            box-shadow: 0 8px 25px rgba(0, 172, 193, 0.2);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .card h3 {
+            color: var(--primary-cyan);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        details {
+            background: linear-gradient(135deg, #f0fdff, #e0f7fa);
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: left;
+            border-left: 5px solid var(--primary-cyan);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        details:hover {
+            box-shadow: 0 4px 12px rgba(0, 172, 193, 0.2);
+        }
+
+        details summary {
+            font-weight: bold;
+            color: var(--dark-cyan);
+            font-size: 1.1rem;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details summary:after {
+            content: '+';
+            font-size: 1.5rem;
+            color: var(--primary-cyan);
+        }
+
+        details[open] summary:after {
+            content: '−';
+        }
+
+        details p {
+            margin-top: 15px;
+            line-height: 1.6;
+            color: var(--dark-cyan);
+        }
+
+        .reminder-item {
+            border-left: 5px solid var(--primary-cyan);
+            margin: 15px 0;
+            padding: 15px 20px;
+            background: linear-gradient(90deg, #f9ffff, #ffffff);
+            border-radius: 10px;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(0, 172, 193, 0.1);
+            transition: all 0.3s;
+        }
+
+        .reminder-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 172, 193, 0.2);
+        }
+
+        #cheer-result {
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f0fdff, #e0f7fa);
+            border-radius: 15px;
+            min-height: 100px;
+        }
+
+        #cheer-result h4 {
+            color: var(--dark-cyan);
+            font-size: 1.5rem;
+            line-height: 1.8;
+        }
+
+        #cheer-result img {
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            margin-top: 15px;
+        }
+
+        .period-info {
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 1.1rem;
+        }
+
+        .date-input-container {
+            margin: 25px 0;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            nav {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="passcode-screen">
+        <h2>💙 Enter Our Secret Code 💙</h2>
+        <input type="password" id="pass-input" maxlength="6" placeholder="******">
+        <br><br>
+        <button onclick="checkPasscode()">Unlock</button>
+    </div>
+
+    <div id="main-content">
+        <header>
+            <h1>Welcome my love, you are precious 💙</h1>
+        </header>
+        
+        <nav>
+            <button onclick="showSection('poems')">💌 Poems</button>
+            <button onclick="showSection('music')">🎵 Music</button>
+            <button onclick="showSection('notes')">📝 Reminders</button>
+            <button onclick="showSection('period')">📅 Tracker</button>
+            <button onclick="showSection('cheerup')">✨ Cheer Up</button>
+        </nav>
+
+        <div class="card" id="display-area">
+            <h3>Click a tab to begin...</h3>
+            <p style="color: var(--accent-blue); margin-top: 20px;">Choose any section above to see the magic ✨</p>
+        </div>
+    </div>
+
+    <script>
+        // --- PASSCODE LOGIC ---
+        function checkPasscode() {
+            const code = document.getElementById('pass-input').value;
+            if(code === "051516") {
+                document.getElementById('passcode-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+            } else {
+                alert("Incorrect code, my love. Try again 💙");
+            }
+        }
+
+        // Allow Enter key to submit passcode
+        document.addEventListener('DOMContentLoaded', function() {
+            const passInput = document.getElementById('pass-input');
+            if(passInput) {
+                passInput.addEventListener('keypress', function(e) {
+                    if(e.key === 'Enter') {
+                        checkPasscode();
+                    }
+                });
+            }
+        });
+
+        // --- NAVIGATION LOGIC ---
+        function showSection(section) {
+            const display = document.getElementById('display-area');
+            
+            if(section === 'poems') {
+                display.innerHTML = `
+                    <h3>💌 My Poems for You</h3>
+                    <details>
+                        <summary>அவள் 💙</summary>
+                        <p>கானகம் அறியா கானம் நீ!<br>
+                        வானகம் அறியா வர்ணம் நீ!<br>
+                        காற்றுக்கும் கேட்காத குயிலிசையின் இனிசை நீ!<br>
+                        இருந்தும் இல்லா இடைவெளியில்,<br>
+                        என் இதயத்தை ஆளும் இளவரசி நீ 👑</p>
+                    </details>
+                    <details>
+                        <summary>Forever 💖</summary>
+                        <p>In every moment, you're on my mind,<br>
+                        A love so pure, so rare to find.<br>
+                        You light my world with your precious smile,<br>
+                        Ruling my world, the Queen with Style.<br>
+                        Forever and always, you'll be my love,<br>
+                        The only soul I'll ever bow. ✨</p>
+                    </details>
+                    <details>
+                        <summary>My Cyanophile 💙</summary>
+                        <p>Like the endless ocean, deep and blue,<br>
+                        My love flows infinite for you.<br>
+                        In every shade of cyan I see,<br>
+                        A reflection of your beauty.<br>
+                        You're my sky, my sea, my everything,<br>
+                        The melody my heart will always sing.🌊<br> 
+						With you being always so great,<br>
+                        You and me are inseperable fate.</p>
+                    </details>
+                `;
+            } 
+            else if(section === 'music') {
+                display.innerHTML = `
+                    <h3>🎵 Our Playlist</h3>
+                    <p style="margin: 20px 0;">These songs remind me of you, my love 💙</p>
+                    <button onclick="window.open('https://open.spotify.com/playlist/6Wz3KJ14GLsxcZs2ce873K?si=f0bf6713117c407a', '_blank')" style="width: 100%; padding: 20px; font-size: 1.1rem;">
+                        🎧 Open Our Spotify Playlist
+                    </button>
+                    <p style="margin-top: 20px; color: var(--accent-blue);">Listen and think of me ✨</p>
+                `;
+            }
+            else if(section === 'notes') {
+                display.innerHTML = `
+                    <h3>📝 Gentle Reminders</h3>
+                    <p style="margin-bottom: 20px; color: var(--accent-blue);">Because I care about you 💙</p>
+                    <div class="reminder-item">💧 Don't forget to drink water, my love!</div>
+                    <div class="reminder-item">🍎 Did you eat yet? Please take care of yourself!</div>
+                    <div class="reminder-item">🌙 It's getting late, sleep soon my precious!</div>
+                    <div class="reminder-item">😊 Remember to smile today!</div>
+                    <div class="reminder-item">💙 You are loved, always and forever!</div>
+                `;
+            }
+            else if(section === 'period') {
+                renderPeriodTracker();
+            }
+            else if(section === 'cheerup') {
+                display.innerHTML = `
+                    <h3>✨ Need a Smile?</h3>
+                    <p style="margin-bottom: 20px; color: var(--accent-blue);">Let me cheer you up, my precious 💙</p>
+                    <button onclick="getCheerImage()" style="margin: 10px;">🖼️ Show Pictures</button>
+                    <button onclick="getCheerLine()" style="margin: 10px;">💕 Cute Lines</button>
+                    <div id="cheer-result"></div>
+                `;
+            }
+        }
+
+        // --- PERIOD TRACKER LOGIC ---
+        function renderPeriodTracker() {
+            const savedDate = localStorage.getItem('lastPeriod') || "Not set yet";
+            
+            let nextPredicted = "N/A";
+            let daysUntil = "N/A";
+            
+            if(savedDate !== "Not set yet") {
+                const lastDate = new Date(savedDate);
+                const predictedNext = new Date(lastDate);
+                predictedNext.setDate(predictedNext.getDate() + 28);
+                nextPredicted = predictedNext.toISOString().split('T')[0];
+                
+                const today = new Date();
+                const diffTime = predictedNext - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                daysUntil = diffDays > 0 ? `${diffDays} days` : "Past due";
+            }
+            
+            document.getElementById('display-area').innerHTML = `
+                <h3>📅 Period Tracker</h3>
+                <div class="period-info">
+                    <p><strong>Last Period Start:</strong> ${savedDate}</p>
+                    <p><strong>Next Expected:</strong> ${nextPredicted}</p>
+                    <p><strong>Days Until:</strong> ${daysUntil}</p>
+                </div>
+                <div class="date-input-container">
+                    <p style="margin-bottom: 10px;"><strong>Update Period Date:</strong></p>
+                    <input type="date" id="new-period-date" style="width: 100%; max-width: 300px;">
+                    <br><br>
+                    <button onclick="savePeriodDate()">💾 Save Date</button>
+                </div>
+                <p style="margin-top: 20px; color: var(--accent-blue); font-size: 0.9rem;">
+                    💡 Tracking helps us take better care of you!
+                </p>
+            `;
+        }
+
+        function savePeriodDate() {
+            const date = document.getElementById('new-period-date').value;
+            if(date) {
+                localStorage.setItem('lastPeriod', date);
+                renderPeriodTracker();
+                alert("Date saved successfully! 💙");
+            } else {
+                alert("Please select a date first!");
+            }
+        }
+
+        // --- CHEER UP LOGIC ---
+        function getCheerLine() {
+            const lines = [
+                "You are the prettiest girl in the world 💖",
+                "You are my precious, my everything 💙",
+                "You are the most amazing girl, you are the Best ✨",
+                "I am always with you, Hug you tightly 🌙",
+                "Love you infinity ♾️ my dear pondati 💖",
+                "Your smile brightens my entire day 😊",
+                "You make my world complete 🌍",
+                "Every moment with you is a blessing 🙏",
+                "You're the reason I exist. To love you indefinetly 💕",
+                "My heart belongs to you forever and you are mine 💙"
+            ];
+            const randomLine = lines[Math.floor(Math.random() * lines.length)];
+            document.getElementById('cheer-result').innerHTML = `<h4>${randomLine}</h4>`;
+        }
+
+        function getCheerImage() {
+            // Using reliable image sources with timestamp to prevent caching
+            const timestamp = new Date().getTime();
+            const categories = ['puppies', 'nature', 'flowers', 'kittens', 'sunset'];
+            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+            
+            // Picsum is very reliable and works well
+            const imageUrl = `https://picsum.photos/400/300?random=${timestamp}`;
+            
+            document.getElementById('cheer-result').innerHTML = `
+                <p style="color: var(--accent-blue); margin-bottom: 10px;">Here's something beautiful for you 💙</p>
+                <img src="${imageUrl}" alt="Beautiful image" onerror="this.src='https://via.placeholder.com/400x300/00acc1/ffffff?text=You+are+precious+💙'" style="transition: opacity 0.5s;">
+            `;
+        }
+    </script>
+</body>
+</html>
