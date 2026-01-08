@@ -49,7 +49,7 @@
             font-size: 1.8rem;
         }
 
-        input[type="password"], input[type="date"] {
+        input[type="password"], input[type="date"], input[type="text"] {
             padding: 12px 20px;
             font-size: 1.2rem;
             border: 2px solid var(--primary-cyan);
@@ -118,6 +118,11 @@
 
         button:active {
             transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .card {
@@ -230,6 +235,44 @@
             margin: 25px 0;
         }
 
+        .history-entry {
+            background: #f9ffff;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-cyan);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delete-btn {
+            background: #ff5252;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .status-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .status-success {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .status-error {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
         /* Animations */
         @keyframes fadeIn {
             from {
@@ -264,6 +307,11 @@
             .card {
                 padding: 20px;
             }
+
+            input[type="text"] {
+                width: 100%;
+                max-width: 300px;
+            }
         }
     </style>
 </head>
@@ -296,7 +344,15 @@
     </div>
 
     <script>
-        // --- PASSCODE LOGIC ---
+        // ==============================================
+        // GOOGLE SHEETS CONFIGURATION
+        // ==============================================
+        // STEP 1: Replace this with your Google Apps Script Web App URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEZ89ubggEwqJVTz0UB5DRCDbcMZkHTQ8dNdiDO-3in36NAgQXGjj6RgqQtKtxcBniZA/exec';
+        
+        // ==============================================
+        // PASSCODE LOGIC
+        // ==============================================
         function checkPasscode() {
             const code = document.getElementById('pass-input').value;
             if(code === "051516") {
@@ -319,7 +375,9 @@
             }
         });
 
-        // --- NAVIGATION LOGIC ---
+        // ==============================================
+        // NAVIGATION LOGIC
+        // ==============================================
         function showSection(section) {
             const display = document.getElementById('display-area');
             
@@ -391,56 +449,167 @@
             }
         }
 
-        // --- PERIOD TRACKER LOGIC ---
-        function renderPeriodTracker() {
-            const savedDate = localStorage.getItem('lastPeriod') || "Not set yet";
-            
-            let nextPredicted = "N/A";
-            let daysUntil = "N/A";
-            
-            if(savedDate !== "Not set yet") {
-                const lastDate = new Date(savedDate);
-                const predictedNext = new Date(lastDate);
-                predictedNext.setDate(predictedNext.getDate() + 28);
-                nextPredicted = predictedNext.toISOString().split('T')[0];
-                
-                const today = new Date();
-                const diffTime = predictedNext - today;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                daysUntil = diffDays > 0 ? `${diffDays} days` : "Past due";
-            }
-            
-            document.getElementById('display-area').innerHTML = `
+        // ==============================================
+        // PERIOD TRACKER WITH GOOGLE SHEETS
+        // ==============================================
+        async function renderPeriodTracker() {
+            const display = document.getElementById('display-area');
+            display.innerHTML = `
                 <h3>📅 Period Tracker</h3>
                 <div class="period-info">
-                    <p><strong>Last Period Start:</strong> ${savedDate}</p>
-                    <p><strong>Next Expected:</strong> ${nextPredicted}</p>
-                    <p><strong>Days Until:</strong> ${daysUntil}</p>
+                    <p>Loading data... 💙</p>
                 </div>
-                <div class="date-input-container">
-                    <p style="margin-bottom: 10px;"><strong>Update Period Date:</strong></p>
-                    <input type="date" id="new-period-date" style="width: 100%; max-width: 300px;">
-                    <br><br>
-                    <button onclick="savePeriodDate()">💾 Save Date</button>
-                </div>
-                <p style="margin-top: 20px; color: var(--accent-blue); font-size: 0.9rem;">
-                    💡 Tracking helps us take better care of you!
-                </p>
             `;
-        }
 
-        function savePeriodDate() {
-            const date = document.getElementById('new-period-date').value;
-            if(date) {
-                localStorage.setItem('lastPeriod', date);
-                renderPeriodTracker();
-                alert("Date saved successfully! 💙");
-            } else {
-                alert("Please select a date first!");
+            try {
+                const response = await fetch(SCRIPT_URL + '?action=getData');
+                const data = await response.json();
+                
+                let lastDate = "Not set yet";
+                let nextPredicted = "N/A";
+                let daysUntil = "N/A";
+                let historyHTML = '';
+
+                if(data.success && data.dates && data.dates.length > 0) {
+                    // Sort dates to get the most recent
+                    const sortedDates = data.dates.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    lastDate = sortedDates[0].date;
+
+                    // Calculate predictions
+                    const last = new Date(lastDate);
+                    const predicted = new Date(last);
+                    predicted.setDate(predicted.getDate() + 28);
+                    nextPredicted = predicted.toISOString().split('T')[0];
+
+                    const today = new Date();
+                    const diffTime = predicted - today;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    daysUntil = diffDays > 0 ? `${diffDays} days` : "Past due";
+
+                    // Build history HTML
+                    historyHTML = '<h4 style="margin-top: 20px;">History:</h4>';
+                    sortedDates.forEach((entry, index) => {
+                        historyHTML += `
+                            <div class="history-entry">
+                                <span>${entry.date}</span>
+                                <button class="delete-btn" onclick="deleteEntry('${entry.date}')">Delete</button>
+                            </div>
+                        `;
+                    });
+                }
+
+                display.innerHTML = `
+                    <h3>📅 Period Tracker</h3>
+                    <div class="period-info">
+                        <p><strong>Last Period Start:</strong> ${lastDate}</p>
+                        <p><strong>Next Expected:</strong> ${nextPredicted}</p>
+                        <p><strong>Days Until:</strong> ${daysUntil}</p>
+                    </div>
+                    <div class="date-input-container">
+                        <p style="margin-bottom: 10px;"><strong>Add New Period Date:</strong></p>
+                        <input type="date" id="new-period-date" style="width: 100%; max-width: 300px;">
+                        <br><br>
+                        <button onclick="savePeriodDate()" id="save-btn">💾 Save Date</button>
+                    </div>
+                    ${historyHTML}
+                    <p style="margin-top: 20px; color: var(--accent-blue); font-size: 0.9rem;">
+                        💡 Data is synced across all devices via Google Sheets!
+                    </p>
+                `;
+
+            } catch(error) {
+                console.error('Error loading data:', error);
+                display.innerHTML = `
+                    <h3>📅 Period Tracker</h3>
+                    <div class="status-message status-error">
+                        ⚠️ Error loading data. Please check your Google Script URL configuration.
+                    </div>
+                    <div class="date-input-container">
+                        <p style="margin-bottom: 10px;"><strong>Add New Period Date:</strong></p>
+                        <input type="date" id="new-period-date" style="width: 100%; max-width: 300px;">
+                        <br><br>
+                        <button onclick="savePeriodDate()" id="save-btn">💾 Save Date</button>
+                    </div>
+                    <p style="margin-top: 20px; color: var(--accent-blue); font-size: 0.9rem;">
+                        💡 Make sure to complete the Google Sheets setup!
+                    </p>
+                `;
             }
         }
 
-        // --- CHEER UP LOGIC ---
+        async function savePeriodDate() {
+            const dateInput = document.getElementById('new-period-date');
+            const saveBtn = document.getElementById('save-btn');
+            const date = dateInput.value;
+
+            if(!date) {
+                alert("Please select a date first!");
+                return;
+            }
+
+            // Disable button during save
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'addDate',
+                        date: date
+                    })
+                });
+
+                const result = await response.json();
+
+                if(result.success) {
+                    alert("Date saved successfully! 💙");
+                    renderPeriodTracker(); // Reload the tracker
+                } else {
+                    alert("Error saving date: " + (result.error || "Unknown error"));
+                }
+
+            } catch(error) {
+                console.error('Error saving data:', error);
+                alert("Error saving date. Please check your internet connection and Google Script setup.");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '💾 Save Date';
+            }
+        }
+
+        async function deleteEntry(date) {
+            if(!confirm(`Delete entry for ${date}?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'deleteDate',
+                        date: date
+                    })
+                });
+
+                const result = await response.json();
+
+                if(result.success) {
+                    alert("Entry deleted! 💙");
+                    renderPeriodTracker(); // Reload the tracker
+                } else {
+                    alert("Error deleting entry: " + (result.error || "Unknown error"));
+                }
+
+            } catch(error) {
+                console.error('Error deleting data:', error);
+                alert("Error deleting entry. Please try again.");
+            }
+        }
+
+        // ==============================================
+        // CHEER UP FUNCTIONS
+        // ==============================================
         function getCheerLine() {
             const lines = [
                 "You are the prettiest girl in the world 💖",
@@ -459,12 +628,7 @@
         }
 
         function getCheerImage() {
-            // Using reliable image sources with timestamp to prevent caching
             const timestamp = new Date().getTime();
-            const categories = ['puppies', 'nature', 'flowers', 'kittens', 'sunset'];
-            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-            
-            // Picsum is very reliable and works well
             const imageUrl = `https://picsum.photos/400/300?random=${timestamp}`;
             
             document.getElementById('cheer-result').innerHTML = `
